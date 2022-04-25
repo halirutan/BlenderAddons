@@ -5,17 +5,18 @@ on:
   - delete
 
 jobs:
-  sync:
+  build:
     runs-on: ubuntu-latest
-    name: Git Repo Sync
+
     steps:
     - uses: actions/checkout@v2
-      with:
+      with: 
         fetch-depth: 0
-    - uses: wangchucheng/git-repo-sync@v0.1.0
-      with:
-        # Such as https://github.com/wangchucheng/git-repo-sync.git
-        target-url: ${{ secrets.TARGET_URL }}
-        target-username: ${{ secrets.TARGET_USERNAME }}
-          # You can store token in your project's 'Setting > Secrets' and reference the name here. Such as ${{ secrets.ACCESS\_TOKEN }}
-        target-token: ${{ secrets.TARGET_TOKEN }}
+    - name: Push To Gitlab
+      env: 
+        token: ${{ secrets.GITLAB_ACCESS_TOKEN }}
+      run: |
+        echo Starting to push repo to gitlab
+        git config user.name ${{ secrets.TARGET_USERNAME }}
+        git remote set-url origin "https://oauth2:${token}@${{ secrets.TARGET_URL }}"
+        git push origin master
